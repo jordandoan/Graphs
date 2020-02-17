@@ -13,18 +13,22 @@ class Graph:
         """
         Add a vertex to the graph.
         """
+        self.vertices.update({vertex_id: set()})
         pass  # TODO
 
     def add_edge(self, v1, v2):
         """
         Add a directed edge to the graph.
         """
+        if self.vertices[v1] and self.vertices[v2]:
+            self.vertices[v1].add(v2)
         pass  # TODO
 
     def get_neighbors(self, vertex_id):
         """
         Get all neighbors (edges) of a vertex.
         """
+        return self.vertices[vertex_id]
         pass  # TODO
 
     def bft(self, starting_vertex):
@@ -32,6 +36,18 @@ class Graph:
         Print each vertex in breadth-first order
         beginning from starting_vertex.
         """
+        q = Queue()
+        q.enqueue(starting_vertex)
+        visited = set()
+        while q.size():
+            for _ in range(q.size()):
+                vert = q.dequeue()
+                if vert not in visited:
+                    visited.add(vert)
+                    print(vert)
+                    for edge in self.vertices[vert]:
+                        q.enqueue(edge)
+
         pass  # TODO
 
     def dft(self, starting_vertex):
@@ -39,6 +55,17 @@ class Graph:
         Print each vertex in depth-first order
         beginning from starting_vertex.
         """
+        s = Stack()
+        s.push(starting_vertex)
+        visited = set()
+        while s.size():
+            for _ in range(s.size()):
+                vert = s.pop()
+                if vert not in visited:
+                    visited.add(vert)
+                    print(vert)
+                    for edge in self.vertices[vert]:
+                        s.push(edge)
         pass  # TODO
 
     def dft_recursive(self, starting_vertex):
@@ -48,6 +75,14 @@ class Graph:
 
         This should be done using recursion.
         """
+        visited = set()
+        def helper(vertex):
+            if vertex in visited:
+                return
+            visited.add(vertex)
+            print(vertex)
+            for edge in self.vertices[starting_vertex]:
+                helper(edge)
         pass  # TODO
 
     def bfs(self, starting_vertex, destination_vertex):
@@ -56,6 +91,24 @@ class Graph:
         starting_vertex to destination_vertex in
         breath-first order.
         """
+        predecessors = {}
+        q = Queue()
+        q.enqueue(starting_vertex)
+        visited = set()
+        while q.size():
+            for _ in range(q.size()):
+                vert = q.dequeue()
+                if destination_vertex == vert:
+                    arr = []
+                    while vert in predecessors:
+                        arr.append(vert)
+                        vert = predecessors[vert]
+                    return arr
+                visited.add(vert)
+                for edge in self.vertices[vert]:
+                    if edge not in visited:
+                        q.enqueue(edge)
+                        predecessors[edge] = vert
         pass  # TODO
 
     def dfs(self, starting_vertex, destination_vertex):
@@ -64,7 +117,27 @@ class Graph:
         starting_vertex to destination_vertex in
         depth-first order.
         """
-        pass  # TODO
+        s = Stack()
+        s.push(starting_vertex)
+        visited = set()
+        predecessors = {}
+        while s.size():
+            for _ in range(s.size()):
+                vert = s.pop()
+                if destination_vertex == vert:
+                    arr = []
+                    while vert in predecessors:
+                        arr.append(vert)
+                        vert = predecessors[vert]
+                    return arr
+                if vert not in visited:
+                    visited.add(vert)
+                    for edge in self.vertices[vert]:
+                        if edge not in visited:
+                            s.push(edge)
+                            predecessors[edge] = vert
+
+
 
     def dfs_recursive(self, starting_vertex):
         """
@@ -74,6 +147,18 @@ class Graph:
 
         This should be done using recursion.
         """
+        visited = set()
+        def helper(vertex, current, target, ans=['inf', []]):
+            if vertex in visited:
+                return ans
+            if vertex == target:
+                current += [vertex]
+                return current
+            visited.add(vertex)
+            print(vertex)
+            for edges in self.vertices[starting_vertex]:
+                helper(edges)
+
         pass  # TODO
 
 if __name__ == '__main__':
