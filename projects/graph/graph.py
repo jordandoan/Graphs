@@ -47,8 +47,6 @@ class Graph:
                     for edge in self.vertices[vert]:
                         q.enqueue(edge)
 
-        pass  # TODO
-
     def dft(self, starting_vertex):
         """
         Print each vertex in depth-first order
@@ -65,7 +63,6 @@ class Graph:
                     print(vert)
                     for edge in self.vertices[vert]:
                         s.push(edge)
-        pass  # TODO
 
     def dft_recursive(self, starting_vertex):
         """
@@ -82,7 +79,6 @@ class Graph:
             print(vertex)
             for edge in self.vertices[starting_vertex]:
                 helper(edge)
-        pass  # TODO
 
     def bfs(self, starting_vertex, destination_vertex):
         """
@@ -109,7 +105,6 @@ class Graph:
                     if edge not in visited:
                         q.enqueue(edge)
                         predecessors[edge] = vert
-        pass  # TODO
 
     def dfs(self, starting_vertex, destination_vertex):
         """
@@ -148,14 +143,14 @@ class Graph:
         This should be done using recursion.
         """
         visited = set()
-        def helper(vertex, current, target):
+        def helper(vertex, path, target):
             if vertex in visited:
                 return None
             if vertex == target:
-                return current
+                return path
             visited.add(vertex)
             for edge in self.vertices[vertex]:
-                result = helper(edge, current + [edge], target)
+                result = helper(edge, path + [edge], target)
                 if result:
                     return result
         return helper(starting_vertex, [starting_vertex], destination_vertex)
