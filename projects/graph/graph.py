@@ -20,9 +20,8 @@ class Graph:
         """
         Add a directed edge to the graph.
         """
-        if self.vertices[v1] and self.vertices[v2]:
+        if self.vertices[v1] is not None and self.vertices[v2] is not None:
             self.vertices[v1].add(v2)
-        pass  # TODO
 
     def get_neighbors(self, vertex_id):
         """
@@ -91,10 +90,11 @@ class Graph:
         starting_vertex to destination_vertex in
         breath-first order.
         """
-        predecessors = {}
+
         q = Queue()
         q.enqueue(starting_vertex)
         visited = set()
+        predecessors = {starting_vertex: None}
         while q.size():
             for _ in range(q.size()):
                 vert = q.dequeue()
@@ -103,7 +103,7 @@ class Graph:
                     while vert in predecessors:
                         arr.append(vert)
                         vert = predecessors[vert]
-                    return arr
+                    return arr[::-1]
                 visited.add(vert)
                 for edge in self.vertices[vert]:
                     if edge not in visited:
@@ -120,7 +120,7 @@ class Graph:
         s = Stack()
         s.push(starting_vertex)
         visited = set()
-        predecessors = {}
+        predecessors = {starting_vertex: None}
         while s.size():
             for _ in range(s.size()):
                 vert = s.pop()
@@ -129,7 +129,7 @@ class Graph:
                     while vert in predecessors:
                         arr.append(vert)
                         vert = predecessors[vert]
-                    return arr
+                    return arr[::-1]
                 if vert not in visited:
                     visited.add(vert)
                     for edge in self.vertices[vert]:
@@ -139,7 +139,7 @@ class Graph:
 
 
 
-    def dfs_recursive(self, starting_vertex):
+    def dfs_recursive(self, starting_vertex, destination_vertex):
         """
         Return a list containing a path from
         starting_vertex to destination_vertex in
@@ -148,18 +148,17 @@ class Graph:
         This should be done using recursion.
         """
         visited = set()
-        def helper(vertex, current, target, ans=['inf', []]):
+        def helper(vertex, current, target):
             if vertex in visited:
-                return ans
+                return None
             if vertex == target:
-                current += [vertex]
                 return current
             visited.add(vertex)
-            print(vertex)
-            for edges in self.vertices[starting_vertex]:
-                helper(edges)
-
-        pass  # TODO
+            for edge in self.vertices[vertex]:
+                result = helper(edge, current + [edge], target)
+                if result:
+                    return result
+        return helper(starting_vertex, [starting_vertex], destination_vertex)
 
 if __name__ == '__main__':
     graph = Graph()  # Instantiate your graph
