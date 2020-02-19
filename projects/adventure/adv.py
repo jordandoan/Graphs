@@ -34,8 +34,34 @@ traversal_path = []
 # TRAVERSAL TEST
 visited_rooms = set()
 player.current_room = world.starting_room
-visited_rooms.add(player.current_room)
-
+# visited_rooms.add(player.current_room)
+def travel(player):
+    if player.current_room in visited_rooms:
+        return
+    else:
+        visited_rooms.add(player.current_room)
+        room = player.current_room
+        if player.current_room.n_to is not None:
+            player.travel('n')
+            travel(player)
+            player.current_room = room
+            traversal_path.extend(['n','s'])
+        if player.current_room.w_to is not None:
+            player.travel('w')
+            travel(player)
+            player.current_room = room
+            traversal_path.extend(['w', 'e'])
+        if player.current_room.e_to is not None:
+            player.travel('e')
+            travel(player)
+            player.current_room = room
+            traversal_path.extend(['e', 'w'])
+        if player.current_room.s_to is not None:
+            player.travel('s')
+            travel(player)
+            player.current_room = room
+            traversal_path.extend(['s', 'n'])
+travel(player)
 for move in traversal_path:
     player.travel(move)
     visited_rooms.add(player.current_room)
@@ -47,16 +73,15 @@ else:
     print(f"{len(room_graph) - len(visited_rooms)} unvisited rooms")
 
 
-
 #######
 # UNCOMMENT TO WALK AROUND
 #######
-player.current_room.print_room_description(player)
-while True:
-    cmds = input("-> ").lower().split(" ")
-    if cmds[0] in ["n", "s", "e", "w"]:
-        player.travel(cmds[0], True)
-    elif cmds[0] == "q":
-        break
-    else:
-        print("I did not understand that command.")
+# player.current_room.print_room_description(player)
+# while True:
+#     cmds = input("-> ").lower().split(" ")
+#     if cmds[0] in ["n", "s", "e", "w"]:
+#         player.travel(cmds[0], True)
+#     elif cmds[0] == "q":
+#         break
+#     else:
+#         print("I did not understand that command.")
