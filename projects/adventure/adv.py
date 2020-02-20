@@ -55,12 +55,15 @@ traversal_graph = collections.defaultdict(dict)
 #                 traversal_path.append(direction)
 #                 new_travel(next_room, opposite[direction], room)
 #                 traversal_path.append(opposite[direction])
-def new_travel(room, direction=None, prev=None):
+
+def new_travel(room, came_from=None, prev=None):
+    if len(traversal_graph) == 500:
+        return
     if room.id not in traversal_graph:
         for exit in room.get_exits():
             traversal_graph[room.id][exit] = '?'
-    if direction and traversal_graph[room.id][direction] == '?':
-        traversal_graph[room.id][direction] = prev.id
+    if came_from and traversal_graph[room.id][came_from] == '?':
+        traversal_graph[room.id][came_from] = prev.id
     while any(traversal_graph[room.id][dir] == '?' for dir in traversal_graph[room.id]):
         dir = random.choice(keys)
         #n, w, s, e
@@ -72,10 +75,34 @@ def new_travel(room, direction=None, prev=None):
                 traversal_path.append(direction)
                 new_travel(next_room, opposite[direction], room)
                 if len(traversal_graph) == 500:
-                    break
+                    return
                 traversal_path.append(opposite[direction])
-new_travel(player.current_room)
-
+# new_travel(player.current_room)
+travrooms = [player.current_room.id]
+def new_travel2(room, came_from=None, prev=None):
+    if len(traversal_graph) == 500:
+        return
+    if room.id not in traversal_graph:
+        for exit in room.get_exits():
+            traversal_graph[room.id][exit] = '?'
+    if came_from:
+        traversal_graph[room.id][came_from] = prev.id
+    exits = room.get_exits()
+    exits.sort(key=lambda k: len(room.get_room_in_direction(k).get_exits()))
+    for direction in exits:
+        if room.get_room_in_direction(direction) is not None:
+            if traversal_graph[room.id][direction] == '?':
+                next_room = room.get_room_in_direction(direction)
+                traversal_graph[room.id][direction] = next_room.id
+                traversal_path.append(direction)
+                travrooms.append(next_room.id)
+                new_travel2(next_room, opposite[direction], room)
+                if len(traversal_graph) == 500:
+                    return
+                traversal_path.append(opposite[direction])
+                travrooms.append(room.id)
+new_travel2(player.current_room)
+print(travrooms)
 def dfs_travel(player):
     visited_rooms.add(player.current_room)
     for dir in dirs:
