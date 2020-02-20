@@ -35,35 +35,30 @@ traversal_path = []
 # TRAVERSAL TEST
 visited_rooms = set()
 player.current_room = world.starting_room
-# visited_rooms.add(player.current_room)
-# def travel(player):
-#     if player.current_room in visited_rooms:
-#         return
-#     else:
-#         visited_rooms.add(player.current_room)
-#         room = player.current_room
-#         if player.current_room.n_to is not None:
-#             player.travel('n')
-#             travel(player)
-#             player.current_room = room
-#             traversal_path.extend(['n','s'])
-#         if player.current_room.w_to is not None:
-#             player.travel('w')
-#             travel(player)
-#             player.current_room = room
-#             traversal_path.extend(['w', 'e'])
-#         if player.current_room.e_to is not None:
-#             player.travel('e')
-#             travel(player)
-#             player.current_room = room
-#             traversal_path.extend(['e', 'w'])
-#         if player.current_room.s_to is not None:
-#             player.travel('s')
-#             travel(player)
-#             player.current_room = room
-#             traversal_path.extend(['s', 'n'])
 dirs = {'n_to':'n', 'w_to': 'w', 'e_to':'e', 's_to':'s'}
+keys = ['n_to', 'w_to', 'e_to', 's_to']
 opposite = {'s':'n', 'w':'e', 'n':'s', 'e':'w'}
+traversal_graph = collections.defaultdict(dict)
+def new_travel(room, direction=None, prev=None):
+    if room.id not in traversal_graph:
+        for exit in room.get_exits():
+            traversal_graph[room.id][exit] = '?'
+    if direction and traversal_graph[room.id][direction] == '?':
+        traversal_graph[room.id][direction] = prev.id
+    elif direction:
+        return
+    for dir in random.choices(keys, k=100):
+        #n, w, s, e
+        direction = dirs[dir]
+        if room.get_room_in_direction(direction) is not None:
+            next_room = room.get_room_in_direction(direction)
+            if traversal_graph[room.id][direction] == '?':
+                traversal_graph[room.id][direction] = next_room.id
+                traversal_path.append(direction)
+                new_travel(next_room, opposite[direction], room)
+                traversal_path.append(opposite[direction])
+
+new_travel(player.current_room)
 def dfs_travel(player):
     visited_rooms.add(player.current_room)
     for dir in dirs:
@@ -93,10 +88,10 @@ def bfs_travel(player):
                         player.travel(opposite[dirs[dir]])
                 player.current_room = prev
                 traversal_path.append(player.current_room.id)
-bfs_travel(player)
-# for move in traversal_path:
-#     player.travel(move)
-#     visited_rooms.add(player.current_room)
+# bfs_travel(player)
+for move in traversal_path:
+    player.travel(move)
+    visited_rooms.add(player.current_room)
 
 print(traversal_path)
 if len(visited_rooms) == len(room_graph):
