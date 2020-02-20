@@ -55,7 +55,24 @@ traversal_graph = collections.defaultdict(dict)
 #                 traversal_path.append(direction)
 #                 new_travel(next_room, opposite[direction], room)
 #                 traversal_path.append(opposite[direction])
-
+degrees = {}
+def bfs_degrees(room):
+    q = collections.deque()
+    q.append((player.current_room, player.current_room))
+    while q:
+        for _ in range(len(q)):
+            room, prev = q.popleft()
+            if room not in visited_rooms:
+                visited_rooms.add(room)
+                player.current_room = room
+                traversal_path.append(room.id)
+                for dir in dirs:
+                    if getattr(player.current_room, dir, None) is not None:
+                        player.travel(dirs[dir])
+                        q.append((player.current_room, room))
+                        player.travel(opposite[dirs[dir]])
+                player.current_room = prev
+                traversal_path.append(player.current_room.id)
 def new_travel(room, came_from=None, prev=None):
     if len(traversal_graph) == 500:
         return
