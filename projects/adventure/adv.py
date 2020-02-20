@@ -39,15 +39,30 @@ dirs = {'n_to':'n', 'w_to': 'w', 'e_to':'e', 's_to':'s'}
 keys = ['n_to', 'w_to', 'e_to', 's_to']
 opposite = {'s':'n', 'w':'e', 'n':'s', 'e':'w'}
 traversal_graph = collections.defaultdict(dict)
+# def new_travel(room, direction=None, prev=None):
+#     if room.id not in traversal_graph:
+#         for exit in room.get_exits():
+#             traversal_graph[room.id][exit] = '?'
+#     if direction and traversal_graph[room.id][direction] == '?':
+#         traversal_graph[room.id][direction] = prev.id
+#     for dir in keys:
+#         #n, w, s, e
+#         direction = dirs[dir]
+#         if room.get_room_in_direction(direction) is not None:
+#             next_room = room.get_room_in_direction(direction)
+#             if traversal_graph[room.id][direction] == '?':
+#                 traversal_graph[room.id][direction] = next_room.id
+#                 traversal_path.append(direction)
+#                 new_travel(next_room, opposite[direction], room)
+#                 traversal_path.append(opposite[direction])
 def new_travel(room, direction=None, prev=None):
     if room.id not in traversal_graph:
         for exit in room.get_exits():
             traversal_graph[room.id][exit] = '?'
     if direction and traversal_graph[room.id][direction] == '?':
         traversal_graph[room.id][direction] = prev.id
-    elif direction:
-        return
-    for dir in random.choices(keys, k=100):
+    while any(traversal_graph[room.id][dir] == '?' for dir in traversal_graph[room.id]):
+        dir = random.choice(keys)
         #n, w, s, e
         direction = dirs[dir]
         if room.get_room_in_direction(direction) is not None:
@@ -56,9 +71,11 @@ def new_travel(room, direction=None, prev=None):
                 traversal_graph[room.id][direction] = next_room.id
                 traversal_path.append(direction)
                 new_travel(next_room, opposite[direction], room)
+                if len(traversal_graph) == 500:
+                    break
                 traversal_path.append(opposite[direction])
-
 new_travel(player.current_room)
+
 def dfs_travel(player):
     visited_rooms.add(player.current_room)
     for dir in dirs:
